@@ -26,4 +26,12 @@ import org.apache.commons.collections4.CollectionUtils;
         .filter(response -> response.isSuccess() && CollectionUtils.isNotEmpty(response.getData()))
         .map(GalleryResponse::getData);
   }
+
+  public Observable<GalleryResponse> getResponse() {
+    return mImgurService.getGallery("hot", "viral");
+  }
+
+  public String getTest() {
+    return "test";
+  }
 }

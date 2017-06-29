@@ -23,10 +23,10 @@ import org.mockito.junit.MockitoJUnitRunner;
   @Test public void getImages() {
     GalleryResponse response = new GalleryResponse().setSuccess(true);
 
-    Mockito.doReturn(Observable.just(response)).when(imgurService).getGallery("test", "test");
+    Mockito.doReturn(Observable.just(response)).when(dataManager).getResponse();
 
     TestObserver<GalleryResponse> testObserver = new TestObserver<>();
-    //dataManager.getImage().subscribe(testObserver);
+    dataManager.getResponse().subscribe(testObserver);
     testObserver.assertComplete();
     testObserver.assertNoErrors();
   }

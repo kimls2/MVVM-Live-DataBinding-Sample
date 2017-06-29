@@ -50,6 +50,7 @@ public class MainViewModel extends AndroidViewModel {
         .subscribeWith(new DisposableObserver<List<GalleryImage>>() {
           @Override public void onNext(@NonNull List<GalleryImage> galleryImages) {
             singleLiveEvent.setValue(galleryImages);
+            snackbarMessage.setValue("success");
           }
 
           @Override public void onError(@NonNull Throwable e) {
@@ -75,5 +76,9 @@ public class MainViewModel extends AndroidViewModel {
 
   public SnackbarMessage getSnackbarMessage() {
     return snackbarMessage;
+  }
+
+  public void getTest(){
+    dataManager.getResponse();
   }
 }

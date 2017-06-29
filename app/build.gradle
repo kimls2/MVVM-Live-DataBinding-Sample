@@ -1,0 +1,110 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'me.tatarka.retrolambda'
+
+android {
+  splits.abi.enable = false
+  splits.density.enable = false
+  aaptOptions.cruncherEnabled = false
+  compileSdkVersion 26
+  buildToolsVersion "26.0.0"
+  defaultConfig {
+    applicationId "com.qualson.mvvm_live_databinding"
+    minSdkVersion 21
+    targetSdkVersion 26
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+
+    debug {
+      minifyEnabled false
+      useProguard false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  configurations.all {
+    resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+  }
+
+  dataBinding {
+    enabled = true
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+dependencies {
+  final SUPPORT_LIBRARY_VERSION = '26.0.0-alpha1'
+  final RETROFIT_VERSION = '2.3.0'
+  final OKHTTP3 = '3.8.1'
+  final RX_JAVA2 = '2.1.1'
+  final RX_ANDROID = '2.0.1'
+  final RX_KOTLIN = '2.0.0'
+  final DAGGER_VERSION = '2.11'
+  final archLifecycleVersion = "1.0.0-alpha3"
+  final guavaVersion = '22.0-android'
+
+  // support lib
+  compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
+  compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+  compile "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
+  compile "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
+  compile 'com.android.support.constraint:constraint-layout:1.0.2'
+  compile "com.google.guava:guava:$guavaVersion"
+
+
+  // arch live
+  compile "android.arch.lifecycle:extensions:$archLifecycleVersion"
+  annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
+
+  // network
+  compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
+  compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
+  compile "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
+  compile "com.squareup.okhttp3:okhttp:$OKHTTP3"
+  compile "com.squareup.okhttp3:logging-interceptor:$OKHTTP3"
+
+  // rx
+  compile "io.reactivex.rxjava2:rxjava:$RX_JAVA2"
+  compile "io.reactivex.rxjava2:rxandroid:$RX_ANDROID"
+  compile "io.reactivex.rxjava2:rxkotlin:$RX_KOTLIN"
+
+  // dagger2
+  compile "com.google.dagger:dagger:$DAGGER_VERSION"
+  compile "com.google.dagger:dagger-android-support:$DAGGER_VERSION"
+  annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+  annotationProcessor "com.google.dagger:dagger-android-processor:$DAGGER_VERSION"
+
+  // debuggin
+  compile 'com.facebook.stetho:stetho:1.5.0'
+  compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+  compile 'com.jakewharton.timber:timber:4.5.1'
+  compile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+  compile 'org.apache.commons:commons-collections4:4.1'
+
+  // image loader
+  compile 'com.github.bumptech.glide:glide:3.8.0'
+
+  provided "org.projectlombok:lombok:1.12.6"
+  annotationProcessor "org.projectlombok:lombok:1.12.6"
+
+
+  // unit test
+  testCompile 'junit:junit:4.12'
+
+  // uit test
+  androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+}

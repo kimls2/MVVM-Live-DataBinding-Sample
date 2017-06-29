@@ -8,6 +8,7 @@ import com.qualson.mvvm_live_databinding.injection.component.DaggerApplicationCo
 import com.qualson.mvvm_live_databinding.injection.module.ApplicationModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 /**
@@ -16,8 +17,8 @@ import timber.log.Timber;
 
 public class MyApp extends Application {
 
+  @Inject DataManager dataManager;
   private final ApplicationComponent applicationComponent = createApplicationComponent();
-  private DataManager dataManager;
   private RefWatcher refWatcher;
 
   @Override public void onCreate() {
@@ -32,7 +33,8 @@ public class MyApp extends Application {
       }
       refWatcher = LeakCanary.install(this);
     }
-    dataManager = applicationComponent.dataManager();
+
+    //dataManager = applicationComponent.dataManager();
   }
 
   protected ApplicationComponent createApplicationComponent() {

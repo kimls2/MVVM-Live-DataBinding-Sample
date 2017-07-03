@@ -17,23 +17,28 @@
 package com.qualson.mvvm_live_databinding.di;
 
 import android.app.Application;
+
 import com.qualson.mvvm_live_databinding.MyApp;
-import com.qualson.mvvm_live_databinding.data.DataManager;
+
+import javax.inject.Singleton;
+
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
-import javax.inject.Singleton;
 
-@Singleton @Component(modules = {
-    AndroidInjectionModule.class, AppModule.class, MainActivityModule.class
-}) public interface AppComponent {
-  @Component.Builder interface Builder {
-    @BindsInstance Builder application(Application application);
+@Singleton
+@Component(modules = {
+        AndroidInjectionModule.class, AppModule.class, MainActivityModule.class
+})
+public interface AppComponent {
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        Builder application(Application application);
 
-    AppComponent build();
-  }
+        AppComponent build();
+    }
 
-  void inject(MyApp myApp);
+    void inject(MyApp myApp);
 
-  DataManager dataManager();
 }

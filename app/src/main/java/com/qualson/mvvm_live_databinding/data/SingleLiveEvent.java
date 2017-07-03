@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.qualson.mvvm_live_databinding;
+package com.qualson.mvvm_live_databinding.data;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;

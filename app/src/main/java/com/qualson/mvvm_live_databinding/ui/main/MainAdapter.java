@@ -16,56 +16,64 @@
 
 package com.qualson.mvvm_live_databinding.ui.main;
 
+import android.databinding.DataBindingComponent;
 import android.databinding.DataBindingUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+
 import com.qualson.mvvm_live_databinding.R;
 import com.qualson.mvvm_live_databinding.data.model.GalleryImage;
-import com.qualson.mvvm_live_databinding.databinding.ItemMainBinding;
-import java.util.ArrayList;
-import java.util.List;
+import com.qualson.mvvm_live_databinding.databinding.MainItemBinding;
+import com.qualson.mvvm_live_databinding.ui.common.DataBoundListAdapter;
+import com.qualson.mvvm_live_databinding.util.Objects;
 
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
+public class MainAdapter extends DataBoundListAdapter<GalleryImage, MainItemBinding> {
+    private final DataBindingComponent dataBindingComponent;
+    private final GalleryClickCallback galleryClickCallback;
 
-  private List<GalleryImage> items;
-
-  public MainAdapter() {
-    items = new ArrayList<>();
-  }
-
-  public void replaceData(List<GalleryImage> tasks) {
-    setList(tasks);
-  }
-
-  @Override public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    ItemMainBinding binding =
-        DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_main,
-            parent, false);
-
-    return new MainViewHolder(binding);
-  }
-
-  @Override public void onBindViewHolder(MainViewHolder holder, int position) {
-    holder.binding.setGalleryImage(items.get(position));
-    holder.binding.executePendingBindings();
-  }
-
-  @Override public int getItemCount() {
-    return items.size();
-  }
-
-  private void setList(List<GalleryImage> tasks) {
-    items = tasks;
-    notifyDataSetChanged();
-  }
-
-  static class MainViewHolder extends RecyclerView.ViewHolder {
-    final ItemMainBinding binding;
-
-    MainViewHolder(ItemMainBinding binding) {
-      super(binding.getRoot());
-      this.binding = binding;
+    public MainAdapter(DataBindingComponent dataBindingComponent,
+                       GalleryClickCallback galleryClickCallback) {
+        this.dataBindingComponent = dataBindingComponent;
+        this.galleryClickCallback = galleryClickCallback;
     }
-  }
+
+    @Override
+    protected MainItemBinding createBinding(ViewGroup parent) {
+        MainItemBinding binding =
+                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.main_item,
+                        parent, false, dataBindingComponent);
+        binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GalleryImage galleryImage = binding.getGalleryImage();
+                galleryClickCallback.onClick(galleryImage);
+            }
+        });
+        return binding;
+    }
+
+    @Override
+    protected void bind(MainItemBinding binding, GalleryImage item) {
+        binding.setGalleryImage(item);
+    }
+
+    @Override
+    protected boolean areItemsTheSame(GalleryImage oldItem, GalleryImage newItem) {
+        return com.qualson.mvvm_live_databinding.util.Objects.equals(oldItem.getDescription(),
+                newItem.getDescription()) && com.qualson.mvvm_live_databinding.util.Objects.equals(
+                oldItem.getTitle(), newItem.getTitle());
+    }
+
+    @Override
+    protected boolean areContentsTheSame(GalleryImage oldItem, GalleryImage newItem) {
+        return Objects.equals(oldItem.getCover(), newItem.getCover()) && Objects.equals(
+                oldItem.getThumbnailSize(), newItem.getThumbnailSize());
+    }
+
+    public interface GalleryClickCallback {
+        void onClick(GalleryImage galleryImage);
+    }
+
+
 }

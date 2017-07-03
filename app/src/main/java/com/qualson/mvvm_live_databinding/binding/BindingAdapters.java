@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package com.qualson.mvvm_live_databinding.di;
+package com.qualson.mvvm_live_databinding.binding;
 
-import com.qualson.mvvm_live_databinding.data.remote.ImgurService;
+import android.databinding.BindingAdapter;
+import android.view.View;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module(includes = ViewModelModule.class)
-class AppModule {
-    @Singleton
-    @Provides
-    ImgurService provideImgurService() {
-        return ImgurService.Factory.makeImugurService();
+/**
+ * Data Binding adapters specific to the app.
+ */
+public class BindingAdapters {
+    @BindingAdapter("visibleGone")
+    public static void showHide(View view, boolean show) {
+        view.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

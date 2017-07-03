@@ -21,6 +21,9 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.Observer;
+
+import com.qualson.mvvm_live_databinding.data.SingleLiveEvent;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

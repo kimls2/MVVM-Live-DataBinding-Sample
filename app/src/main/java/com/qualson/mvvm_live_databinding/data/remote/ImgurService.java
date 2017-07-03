@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.qualson.mvvm_live_databinding.BuildConfig;
 import com.qualson.mvvm_live_databinding.data.model.GalleryResponse;
+
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,37 +21,38 @@ import retrofit2.http.Path;
 
 public interface ImgurService {
 
-  String ENDPOINT = "https://api.imgur.com";
+    String ENDPOINT = "https://api.imgur.com";
 
-  @GET("/3/gallery/{section}/{sort}/{window}/{page}.json") Observable<GalleryResponse> getGallery(
-      @Path("section") String section, @Path("sort") String sort);
+    @GET("/3/gallery/{section}/{sort}/{window}/{page}.json")
+    Observable<GalleryResponse> getGallery(
+            @Path("section") String section, @Path("sort") String sort);
 
-  class Factory {
-    public static ImgurService makeImugurService() {
-      HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-      logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
-          : HttpLoggingInterceptor.Level.NONE);
+    class Factory {
+        public static ImgurService makeImugurService() {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
+                    : HttpLoggingInterceptor.Level.NONE);
 
-      OkHttpClient okHttpClient = new OkHttpClient.Builder() //
-          .addInterceptor(logging)  //
-          .addInterceptor(chain -> {
-            Request request = chain.request()
-                .newBuilder()
-                .addHeader("Authorization", "Client-ID fb89f7a636907c2")
-                .build();
-            return chain.proceed(request);
-          }) //
-          .build();
+            OkHttpClient okHttpClient = new OkHttpClient.Builder() //
+                    .addInterceptor(logging)  //
+                    .addInterceptor(chain -> {
+                        Request request = chain.request()
+                                .newBuilder()
+                                .addHeader("Authorization", "Client-ID fb89f7a636907c2")
+                                .build();
+                        return chain.proceed(request);
+                    }) //
+                    .build();
 
-      Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
+            Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
-      Retrofit retrofit = new Retrofit.Builder() //
-          .baseUrl(ImgurService.ENDPOINT) //
-          .client(okHttpClient) //
-          .addConverterFactory(GsonConverterFactory.create(gson)) //
-          .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //
-          .build();
-      return retrofit.create(ImgurService.class);
+            Retrofit retrofit = new Retrofit.Builder() //
+                    .baseUrl(ImgurService.ENDPOINT) //
+                    .client(okHttpClient) //
+                    .addConverterFactory(GsonConverterFactory.create(gson)) //
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //
+                    .build();
+            return retrofit.create(ImgurService.class);
+        }
     }
-  }
 }

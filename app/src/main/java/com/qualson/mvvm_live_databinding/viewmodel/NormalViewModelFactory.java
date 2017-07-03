@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package com.qualson.mvvm_live_databinding;
+package com.qualson.mvvm_live_databinding.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import com.qualson.mvvm_live_databinding.data.DataManager;
+
 import com.qualson.mvvm_live_databinding.ui.main.MainViewModel;
 
 /**
@@ -30,32 +30,33 @@ import com.qualson.mvvm_live_databinding.ui.main.MainViewModel;
  * actually necessary in this case, as the product ID can be passed in a public method.
  */
 
-public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+public class NormalViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-  @SuppressLint("StaticFieldLeak") private static volatile ViewModelFactory INSTANCE;
+    @SuppressLint("StaticFieldLeak")
+    private static volatile NormalViewModelFactory INSTANCE;
 
-  private final DataManager dataManager;
-  private final Application application;
+    private final Application application;
 
-  public static ViewModelFactory getInstance(Application application) {
-    synchronized (ViewModelFactory.class) {
-      if (INSTANCE == null) {
-        INSTANCE = new ViewModelFactory(application);
-      }
+    public static NormalViewModelFactory getInstance(Application application) {
+        synchronized (NormalViewModelFactory.class) {
+            if (INSTANCE == null) {
+                INSTANCE = new NormalViewModelFactory(application);
+            }
+        }
+        return INSTANCE;
     }
-    return INSTANCE;
-  }
 
-  private ViewModelFactory(Application application) {
-    this.application = application;
-    this.dataManager = ((MyApp) application).getDataManager();
-  }
-
-  @Override public <T extends ViewModel> T create(Class<T> modelClass) {
-    if (modelClass.isAssignableFrom(MainViewModel.class)) {
-      //noinspection unchecked
-      return (T) new MainViewModel(application, dataManager);
+    private NormalViewModelFactory(Application application) {
+        this.application = application;
     }
-    throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
-  }
+
+    @Override
+    public <T extends ViewModel> T create(Class<T> modelClass) {
+        if (modelClass.isAssignableFrom(MainViewModel.class)) {
+            //noinspection unchecked
+//      return (T) new MainViewModel(application);
+            return null;
+        }
+        throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
+    }
 }

@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
   splits.abi.enable = false
@@ -45,7 +44,7 @@ android {
 }
 
 dependencies {
-  final SUPPORT_LIBRARY_VERSION = '25.3.1'
+  final SUPPORT_LIBRARY_VERSION = '25.4.0'
   final RETROFIT_VERSION = '2.3.0'
   final OKHTTP3 = '3.8.1'
   final RX_JAVA2 = '2.1.1'

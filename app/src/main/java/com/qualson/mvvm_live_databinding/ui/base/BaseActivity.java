@@ -2,38 +2,44 @@ package com.qualson.mvvm_live_databinding.ui.base;
 
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import com.qualson.mvvm_live_databinding.BuildConfig;
+
 import com.qualson.mvvm_live_databinding.MyApp;
-import com.qualson.mvvm_live_databinding.injection.component.ActivityComponent;
-import com.qualson.mvvm_live_databinding.injection.component.DaggerActivityComponent;
+import com.squareup.leakcanary.RefWatcher;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 /**
- * Created by ykim on 2017. 4. 11..
+ * Created by ykim on 2017. 7. 3..
  */
 
-public class BaseActivity extends AppCompatActivity implements LifecycleRegistryOwner {
+public abstract class BaseActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector {
 
-  private ActivityComponent activityComponent;
-  private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
-  public ActivityComponent activityComponent() {
-    if (activityComponent == null) {
-      activityComponent = DaggerActivityComponent.builder()
-          .applicationComponent(MyApp.get(this).getComponent())
-          .build();
+    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
     }
-    return activityComponent;
-  }
 
-  @Override protected void onDestroy() {
-    super.onDestroy();
-    if (BuildConfig.DEBUG) {
-      MyApp.getRefWatcher(this).watch(this);
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
     }
-  }
 
-  @Override public LifecycleRegistry getLifecycle() {
-    return lifecycleRegistry;
-  }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(this);
+        refWatcher.watch(this);
+    }
 }

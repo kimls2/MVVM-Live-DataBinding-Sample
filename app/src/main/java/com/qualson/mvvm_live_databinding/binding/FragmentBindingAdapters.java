@@ -21,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import javax.inject.Inject;
 
@@ -34,8 +35,9 @@ public class FragmentBindingAdapters {
     public FragmentBindingAdapters(Fragment fragment) {
         this.fragment = fragment;
     }
-    @BindingAdapter("imageUrl")
+
+    @BindingAdapter("loadUrl")
     public void bindImage(ImageView imageView, String url) {
-        Glide.with(fragment).load(url).into(imageView);
+        Glide.with(fragment).load(url).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
     }
 }

@@ -17,6 +17,7 @@
 package com.qualson.mvvm_live_databinding.di;
 
 import com.qualson.mvvm_live_databinding.ui.main.MainFragment;
+
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 

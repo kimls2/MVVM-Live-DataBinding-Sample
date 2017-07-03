@@ -1,80 +1,101 @@
 package com.qualson.mvvm_live_databinding.ui.main;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.databinding.DataBindingComponent;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.qualson.mvvm_live_databinding.R;
-import com.qualson.mvvm_live_databinding.SnackbarMessage;
+import com.qualson.mvvm_live_databinding.util.SnackbarMessage;
 import com.qualson.mvvm_live_databinding.binding.FragmentDataBindingComponent;
-import com.qualson.mvvm_live_databinding.databinding.FragmentMainBinding;
-import com.qualson.mvvm_live_databinding.ui.common.TestMainAdapter;
+import com.qualson.mvvm_live_databinding.data.model.GalleryImage;
+import com.qualson.mvvm_live_databinding.databinding.MainFragmentBinding;
+import com.qualson.mvvm_live_databinding.di.Injectable;
+import com.qualson.mvvm_live_databinding.util.AutoClearedValue;
 import com.qualson.mvvm_live_databinding.util.SnackbarUtils;
+
+import javax.inject.Inject;
 
 /**
  * Created by ykim on 2017. 6. 28..
  */
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LifecycleRegistryOwner, Injectable {
 
-  private MainViewModel mainViewModel;
-  private FragmentMainBinding fragmentMainBinding;
-  private MainAdapter adapter;
-  private TestMainAdapter testMainAdapter;
+    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-  DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    private MainViewModel mainViewModel;
 
-  public static MainFragment newInstance() {
-    return new MainFragment();
-  }
+    android.databinding.DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
+    AutoClearedValue<MainFragmentBinding> binding;
+    AutoClearedValue<MainAdapter> adapter;
 
-  @Nullable @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      Bundle savedInstanceState) {
-    fragmentMainBinding =
-        DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
-    return fragmentMainBinding.getRoot();
-  }
 
-  @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    mainViewModel = MainActivity.obtainViewModel(getActivity());
-    adapter = new MainAdapter();
-    testMainAdapter =
-        new TestMainAdapter(dataBindingComponent, repo -> {
+    public static MainFragment newInstance() {
+        return new MainFragment();
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        mainViewModel = MainActivity.obtainViewModel(getActivity());
+        mainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        MainAdapter adapter = new MainAdapter(dataBindingComponent, new MainAdapter.GalleryClickCallback() {
+            @Override
+            public void onClick(GalleryImage galleryImage) {
+                SnackbarUtils.showSnackbar(getView(), galleryImage.getTitle());
+            }
         });
-    fragmentMainBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    fragmentMainBinding.recyclerView.setAdapter(adapter);
-    mainViewModel.getGalleryImages()
-        .observe((LifecycleOwner) getActivity(),
-            galleryImages -> adapter.replaceData(galleryImages));
-    mainViewModel.getSnackbarMessage()
-        .observe((LifecycleOwner) getActivity(), new SnackbarMessage.SnackbarObserver() {
-          @Override public void onNewMessage(String message) {
-            SnackbarUtils.showSnackbar(getView(), message);
-          }
+        this.adapter = new AutoClearedValue<>(this, adapter);
+        binding.get().imageList.setAdapter(adapter);
+        mainViewModel.getGalleryImages().observe(this, galleryImages -> {
+            this.adapter.get().replace(galleryImages);
         });
-  }
+        mainViewModel.getSnackbarMessage().observe(this, (SnackbarMessage.SnackbarObserver) message -> SnackbarUtils.showSnackbar(getView(), message));
 
-  @Override public void onResume() {
-    super.onResume();
-    mainViewModel.start();
-  }
+    }
 
-  @Override public void onDestroyView() {
-    super.onDestroyView();
-    mainViewModel.destroy();
-  }
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
+        MainFragmentBinding dataBinding =
+                DataBindingUtil.inflate(inflater, R.layout.main_fragment, container, false);
+        binding = new AutoClearedValue<>(this, dataBinding);
+        return dataBinding.getRoot();
 
-  // for testing
-  public boolean isActive() {
-    return isAdded();
-  }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainViewModel.start();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mainViewModel.destroy();
+    }
+
+    // for testing
+    public boolean isActive() {
+        return isAdded();
+    }
+
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
+
+
 }

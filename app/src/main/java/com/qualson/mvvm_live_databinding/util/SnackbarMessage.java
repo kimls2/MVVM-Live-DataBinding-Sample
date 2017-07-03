@@ -14,9 +14,11 @@
  *  limitations under the License.
  */
 
-package com.qualson.mvvm_live_databinding;
+package com.qualson.mvvm_live_databinding.util;
 
 import android.arch.lifecycle.LifecycleOwner;
+
+import com.qualson.mvvm_live_databinding.data.SingleLiveEvent;
 
 /**
  * A SingleLiveEvent used for Snackbar messages. Like a {@link SingleLiveEvent} but also prevents

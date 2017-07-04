@@ -25,7 +25,6 @@ public class MyApp extends Application implements HasActivityInjector {
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     private RefWatcher refWatcher;
-
     public static RefWatcher getRefWatcher(Context context) {
         MyApp application = (MyApp) context.getApplicationContext();
         return application.refWatcher;

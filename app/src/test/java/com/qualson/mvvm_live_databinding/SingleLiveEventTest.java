@@ -38,86 +38,94 @@ import static org.mockito.Mockito.when;
 
 public class SingleLiveEventTest {
 
-  // Execute tasks synchronously
-  @Rule public InstantTaskExecutorRule instantExecutorRule = new InstantTaskExecutorRule();
+    // Execute tasks synchronously
+    @Rule
+    public InstantTaskExecutorRule instantExecutorRule = new InstantTaskExecutorRule();
 
-  // The class that has the lifecycle
-  @Mock private LifecycleOwner mOwner;
+    // The class that has the lifecycle
+    @Mock
+    private LifecycleOwner mOwner;
 
-  // The observer of the event under test
-  @Mock private Observer<Integer> mEventObserver;
+    // The observer of the event under test
+    @Mock
+    private Observer<Integer> mEventObserver;
 
-  // Defines the Android Lifecycle of an object, used to trigger different events
-  private LifecycleRegistry mLifecycle;
+    // Defines the Android Lifecycle of an object, used to trigger different events
+    private LifecycleRegistry mLifecycle;
 
-  // Event object under test
-  private SingleLiveEvent<Integer> mSingleLiveEvent = new SingleLiveEvent<>();
+    // Event object under test
+    private SingleLiveEvent<Integer> mSingleLiveEvent = new SingleLiveEvent<>();
 
-  @Before public void setUpLifecycles() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUpLifecycles() throws Exception {
+        MockitoAnnotations.initMocks(this);
 
-    // Link custom lifecycle owner with the lifecyle register.
-    mLifecycle = new LifecycleRegistry(mOwner);
-    when(mOwner.getLifecycle()).thenReturn(mLifecycle);
+        // Link custom lifecycle owner with the lifecyle register.
+        mLifecycle = new LifecycleRegistry(mOwner);
+        when(mOwner.getLifecycle()).thenReturn(mLifecycle);
 
-    // Start observing
-    mSingleLiveEvent.observe(mOwner, mEventObserver);
+        // Start observing
+        mSingleLiveEvent.observe(mOwner, mEventObserver);
 
-    // Start in a non-active state
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
-  }
+        // Start in a non-active state
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+    }
 
-  @Test public void valueNotSet_onFirstOnResume() {
-    // On resume
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
+    @Test
+    public void valueNotSet_onFirstOnResume() {
+        // On resume
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
 
-    // no update should be emitted because no value has been set
-    verify(mEventObserver, never()).onChanged(anyInt());
-  }
+        // no update should be emitted because no value has been set
+        verify(mEventObserver, never()).onChanged(anyInt());
+    }
 
-  @Test public void singleUpdate_onSecondOnResume_updatesOnce() {
-    // After a value is set
-    mSingleLiveEvent.setValue(42);
+    @Test
+    public void singleUpdate_onSecondOnResume_updatesOnce() {
+        // After a value is set
+        mSingleLiveEvent.setValue(42);
 
-    // observers are called once on resume
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
+        // observers are called once on resume
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
 
-    // on second resume, no update should be emitted.
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP);
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
+        // on second resume, no update should be emitted.
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP);
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
 
-    // Check that the observer is called once
-    verify(mEventObserver, times(1)).onChanged(anyInt());
-  }
+        // Check that the observer is called once
+        verify(mEventObserver, times(1)).onChanged(anyInt());
+    }
 
-  @Test public void twoUpdates_updatesTwice() {
-    // After a value is set
-    mSingleLiveEvent.setValue(42);
+    @Test
+    public void twoUpdates_updatesTwice() {
+        // After a value is set
+        mSingleLiveEvent.setValue(42);
 
-    // observers are called once on resume
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
+        // observers are called once on resume
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
 
-    // when the value is set again, observers are called again.
-    mSingleLiveEvent.setValue(23);
+        // when the value is set again, observers are called again.
+        mSingleLiveEvent.setValue(23);
 
-    // Check that the observer has been called twice
-    verify(mEventObserver, times(2)).onChanged(anyInt());
-  }
+        // Check that the observer has been called twice
+        verify(mEventObserver, times(2)).onChanged(anyInt());
+    }
 
-  @Test public void twoUpdates_noUpdateUntilActive() {
-    // Set a value
-    mSingleLiveEvent.setValue(42);
+    @Test
+    public void twoUpdates_noUpdateUntilActive() {
+        // Set a value
+        mSingleLiveEvent.setValue(42);
 
-    // which doesn't emit a change
-    verify(mEventObserver, never()).onChanged(42);
+        // which doesn't emit a change
+        verify(mEventObserver, never()).onChanged(42);
 
-    // and set it again
-    mSingleLiveEvent.setValue(42);
+        // and set it again
+        mSingleLiveEvent.setValue(42);
 
-    // observers are called once on resume.
-    mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
+        // observers are called once on resume.
+        mLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
 
-    // Check that the observer is called only once
-    verify(mEventObserver, times(1)).onChanged(anyInt());
-  }
+        // Check that the observer is called only once
+        verify(mEventObserver, times(1)).onChanged(anyInt());
+    }
 }

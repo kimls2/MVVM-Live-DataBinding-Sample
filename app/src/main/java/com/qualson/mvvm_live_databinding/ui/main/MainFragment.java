@@ -13,12 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.qualson.mvvm_live_databinding.R;
-import com.qualson.mvvm_live_databinding.util.SnackbarMessage;
 import com.qualson.mvvm_live_databinding.binding.FragmentDataBindingComponent;
-import com.qualson.mvvm_live_databinding.data.model.GalleryImage;
 import com.qualson.mvvm_live_databinding.databinding.MainFragmentBinding;
 import com.qualson.mvvm_live_databinding.di.Injectable;
 import com.qualson.mvvm_live_databinding.util.AutoClearedValue;
+import com.qualson.mvvm_live_databinding.util.SnackbarMessage;
 import com.qualson.mvvm_live_databinding.util.SnackbarUtils;
 
 import javax.inject.Inject;
@@ -34,10 +33,9 @@ public class MainFragment extends Fragment implements LifecycleRegistryOwner, In
     @Inject
     ViewModelProvider.Factory viewModelFactory;
     private MainViewModel mainViewModel;
-
-    android.databinding.DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
-    AutoClearedValue<MainFragmentBinding> binding;
-    AutoClearedValue<MainAdapter> adapter;
+    private android.databinding.DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
+    private AutoClearedValue<MainFragmentBinding> binding;
+    private AutoClearedValue<MainAdapter> adapter;
 
 
     public static MainFragment newInstance() {
@@ -47,21 +45,12 @@ public class MainFragment extends Fragment implements LifecycleRegistryOwner, In
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        mainViewModel = MainActivity.obtainViewModel(getActivity());
         mainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        MainAdapter adapter = new MainAdapter(dataBindingComponent, new MainAdapter.GalleryClickCallback() {
-            @Override
-            public void onClick(GalleryImage galleryImage) {
-                SnackbarUtils.showSnackbar(getView(), galleryImage.getTitle());
-            }
-        });
+        MainAdapter adapter = new MainAdapter(dataBindingComponent, galleryImage -> SnackbarUtils.showSnackbar(getView(), galleryImage.getTitle()));
         this.adapter = new AutoClearedValue<>(this, adapter);
         binding.get().imageList.setAdapter(adapter);
-        mainViewModel.getGalleryImages().observe(this, galleryImages -> {
-            this.adapter.get().replace(galleryImages);
-        });
+        mainViewModel.getGalleryImages().observe(this, galleryImages -> this.adapter.get().replace(galleryImages));
         mainViewModel.getSnackbarMessage().observe(this, (SnackbarMessage.SnackbarObserver) message -> SnackbarUtils.showSnackbar(getView(), message));
-
     }
 
     @Nullable

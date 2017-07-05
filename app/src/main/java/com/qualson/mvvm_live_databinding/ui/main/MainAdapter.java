@@ -19,7 +19,6 @@ package com.qualson.mvvm_live_databinding.ui.main;
 import android.databinding.DataBindingComponent;
 import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.qualson.mvvm_live_databinding.R;
@@ -43,12 +42,9 @@ public class MainAdapter extends DataBoundListAdapter<GalleryImage, MainItemBind
         MainItemBinding binding =
                 DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.main_item,
                         parent, false, dataBindingComponent);
-        binding.getRoot().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GalleryImage galleryImage = binding.getGalleryImage();
-                galleryClickCallback.onClick(galleryImage);
-            }
+        binding.getRoot().setOnClickListener(v -> {
+            GalleryImage galleryImage = binding.getGalleryImage();
+            galleryClickCallback.onClick(galleryImage);
         });
         return binding;
     }

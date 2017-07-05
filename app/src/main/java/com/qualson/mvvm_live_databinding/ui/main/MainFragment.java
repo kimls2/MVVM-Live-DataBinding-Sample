@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +49,11 @@ public class MainFragment extends Fragment implements LifecycleRegistryOwner, In
         mainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         MainAdapter adapter = new MainAdapter(dataBindingComponent, galleryImage -> SnackbarUtils.showSnackbar(getView(), galleryImage.getTitle()));
         this.adapter = new AutoClearedValue<>(this, adapter);
+        binding.get().imageList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.get().imageList.setAdapter(adapter);
         mainViewModel.getGalleryImages().observe(this, galleryImages -> this.adapter.get().replace(galleryImages));
         mainViewModel.getSnackbarMessage().observe(this, (SnackbarMessage.SnackbarObserver) message -> SnackbarUtils.showSnackbar(getView(), message));
+        mainViewModel.start();
     }
 
     @Nullable
@@ -67,7 +70,7 @@ public class MainFragment extends Fragment implements LifecycleRegistryOwner, In
     @Override
     public void onResume() {
         super.onResume();
-        mainViewModel.start();
+//        mainViewModel.start();
     }
 
     @Override

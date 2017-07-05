@@ -6,10 +6,10 @@ import android.databinding.Bindable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 
-import com.qualson.mvvm_live_databinding.data.SingleLiveEvent;
-import com.qualson.mvvm_live_databinding.util.SnackbarMessage;
 import com.qualson.mvvm_live_databinding.data.DataManager;
+import com.qualson.mvvm_live_databinding.data.SingleLiveEvent;
 import com.qualson.mvvm_live_databinding.data.model.GalleryImage;
+import com.qualson.mvvm_live_databinding.util.SnackbarMessage;
 
 import java.util.List;
 
@@ -68,7 +68,6 @@ public class MainViewModel extends AndroidViewModel {
 
                     @Override
                     public void onComplete() {
-                        Timber.e("complete");
                         snackbarMessage.setValue("completed");
                     }
                 }));
@@ -76,7 +75,6 @@ public class MainViewModel extends AndroidViewModel {
 
     public void destroy() {
         compositeDisposable.clear();
-        Timber.e("destroy");
     }
 
     public SingleLiveEvent<List<GalleryImage>> getGalleryImages() {
